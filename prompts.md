@@ -420,3 +420,25 @@
 - Confirmed uncommitted warning is only `.claude/` memory dir (intentionally untracked)
 - Updated `prompts.md` (this entry)
 - Next: user merges PR #9, then start `feature/smoke-tests` (Tasks 30–37)
+
+---
+
+## Turn 18 — Tasks 30–37: feature/smoke-tests
+
+**Prompt used:**
+
+> merge done! proceed with smoke tests
+
+**Actions taken:**
+- Task 30: Pulled merged `main`, created and checked out `feature/smoke-tests`
+- Task 31: Created empty package markers — `tests/__init__.py`, `tests/unit/__init__.py`, `tests/integration/__init__.py`
+- Task 32: Wrote `tests/conftest.py` — forces `SUPABASE_DB_URL=TEST_DATABASE_URL` before any app import; patches `app.database.engine` + `SessionLocal` with a SQLite engine (check_same_thread=False); overrides `get_db` dependency; session-scoped `_init_db` fixture (create_all/drop_all); session-scoped `client` fixture; function-scoped `db`, `sample_log_entry`, `sample_alert` fixtures
+- Task 33: Wrote `tests/unit/test_anomaly_detector.py` — 8 tests covering `_zscore` (<5 samples, spike value), `_tier1` (threshold, dual-breach CRITICAL, below threshold), `_tier2` (extreme spike), `_tier3` (skipped <20 windows), `_severity_from_zscore` (all 4 levels)
+- Task 34: Wrote `tests/integration/test_logs_api.py` — 7 tests (single ingest 201, batch 201 with count, empty batch 422, >1000 422, paginated GET, service filter, level filter)
+- Task 35: Wrote `tests/integration/test_metrics_api.py` — 5 tests (summary schema, health_score range, timeseries valid, timeseries invalid 422, snapshots paginated)
+- Task 36: Wrote `tests/integration/test_alerts_api.py` — 6 tests (list paginated, get by id, get 404, acknowledge, acknowledge non-OPEN 400, resolve)
+- Task 37: Wrote `tests/smoke_test.py` — standalone 8-step script; exits 0 on all pass, 1 on any fail
+- Ran `pytest tests/unit/ -v` → 8/8 passed
+- Ran `pytest tests/integration/ -v` → 18/18 passed
+- Ran `ruff check tests/` → all clean
+- Updated `todo.md` (Tasks 30–37 marked `[x]`, progress 37/37) and `prompts.md` (this entry)
