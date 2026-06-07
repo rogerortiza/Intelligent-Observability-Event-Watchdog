@@ -213,6 +213,23 @@
 
 ---
 
+## Turn 11 — Task 10–13: feature/log-ingestion-api
+
+**Prompt used:**
+
+> done! Proceed with Task 10
+
+**Actions taken:**
+- Checked out main, pulled merged PR #2, created `feature/log-ingestion-api` branch (Task 10)
+- Task 11: wrote `app/schemas.py` — 17 Pydantic schemas + `BatchIngestResponse`; `PaginatedResponse` is a Generic[T]; all ORM-facing schemas use `ConfigDict(from_attributes=True)`
+- Task 12: wrote `app/routers/logs.py` — POST /ingest (201 LogEntryOut), POST /ingest/batch (201 BatchIngestResponse, 1–1000 entries), GET "" (PaginatedResponse[LogEntryOut] with service/level/start_time/end_time/limit/offset filters, ordered by timestamp DESC)
+- Task 13: wrote `app/main.py` — FastAPI app with asynccontextmanager lifespan (init_db → start_watchdog on startup, stop_watchdog on shutdown), CORSMiddleware allow-all, logs router at /api/v1, GET /api/v1/health returning HealthCheck with dialect + watchdog state + uptime
+- Wrote `app/services/watchdog.py` stub (no-op loop, proper interface) so main.py imports cleanly until Task 23 replaces it
+- Verified: all schemas import, `LogEntryCreate(level="ERROR", ...)` validates, all routes registered at correct paths, Swagger/ReDoc available
+- Updated todo.md (Tasks 10–13 done, 13/37 total), prompts.md (this entry)
+
+---
+
 ## Turn 10 — hashFiles CI Condition + Tasks 06–09 (feature/database-models)
 
 **Prompt used:**
