@@ -213,6 +213,25 @@
 
 ---
 
+## Turn 14 — Tasks 22–23: feature/watchdog-scheduler
+
+**Prompt used:**
+
+> great. I've already merged the PR. Proceed with the next task 22
+
+**Actions taken:**
+- Pulled merged PRs #5 and #6 to main, created `feature/watchdog-scheduler` branch (Task 22)
+- Task 23: replaced stub `app/services/watchdog.py` with full implementation:
+  - `_aggregate_window(db, service, start, end)` — queries LogEntry rows in [start, end), computes total_logs, error_count, warning_count, error_rate, avg/p95/max latency via numpy, returns MetricSnapshot (not yet persisted)
+  - `run_watchdog_cycle()` — async; creates own SessionLocal; discovers distinct services in current window; skips (service, window_start) pairs with existing snapshots (idempotent); flushes snapshot to get ID; runs detect_anomalies; create_alert_from_result for each result; first commit (snapshots+alerts); dispatch_alert for each new alert; second commit (WebhookDelivery records); exception logs + rollback + continues
+  - `_loop()` — sleeps WATCHDOG_INTERVAL_SECONDS then calls run_watchdog_cycle(), forever
+  - `start_watchdog()` / `stop_watchdog()` — asyncio.Task lifecycle, CancelledError-safe teardown
+  - `is_running()` — checks task state
+- Verified: all functions are the correct coroutine/sync types; `_aggregate_window` on empty window returns zero totals and None latency fields
+- Updated todo.md (Tasks 22–23 done, 23/37 total), prompts.md (this entry)
+
+---
+
 ## Turn 13 — Tasks 17–21: feature/alert-manager + feature/webhook-dispatcher
 
 **Prompt used:**
