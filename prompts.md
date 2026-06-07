@@ -404,3 +404,19 @@
 - Renumbered nine downstream headers (3→4 through 11→12) via individual Edit calls
 - Verified with `grep "^## "` — headers 1–12 sequential, no gaps
 - Updated prompts.md (this entry)
+
+---
+
+## Turn 17 — PR #9 for feature/streamlit-dashboard (session resume)
+
+**Prompt used:**
+
+> (Session resumed after context compaction — continuing from where Turn 16 left off)
+> The `feature/streamlit-dashboard` branch was already pushed. This turn creates the PR.
+
+**Actions taken:**
+- Ran `gh pr create` for `feature/streamlit-dashboard` → PR #9 opened
+- URL: https://github.com/rogerortiza/Intelligent-Observability-Event-Watchdog/pull/9
+- Confirmed uncommitted warning is only `.claude/` memory dir (intentionally untracked)
+- Updated `prompts.md` (this entry)
+- Next: user merges PR #9, then start `feature/smoke-tests` (Tasks 30–37)
