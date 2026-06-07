@@ -62,9 +62,9 @@
 > Covers: webhook delivery service, webhook CRUD router  
 > Depends on: Task 09 (WebhookConfig, WebhookDelivery models), Task 11 (webhook schemas)
 
-- [ ] Task 19 — `git` — Create and checkout `feature/webhook-dispatcher` from main — AC: `git branch --show-current` prints `feature/webhook-dispatcher`
-- [ ] Task 20 — `app/services/webhook_dispatcher.py` — `_build_payload(alert)` serializing alert to JSON dict; `_sign_payload(secret, body)` generating `sha256=<hmac>` header; `dispatch_alert(db, alert)` querying active `WebhookConfig` rows, filtering by severity and alert_type, POSTing signed payload via `httpx.AsyncClient`, persisting `WebhookDelivery` row with status/status_code/response_body for each attempt — AC: Dispatching to `https://httpbin.org/post` returns a `WebhookDelivery` with `status=SUCCESS` and `status_code=200`; dispatching to an unreachable URL creates a `WebhookDelivery` with `status=FAILED` and a non-null `error_message`; a webhook with `min_severity=CRITICAL` is skipped for a MEDIUM alert
-- [ ] Task 21 — `app/routers/webhooks.py` — `POST /api/v1/webhooks` (201 `WebhookOut`); `GET /api/v1/webhooks` (list all); `GET /api/v1/webhooks/{id}` (single or 404); `DELETE /api/v1/webhooks/{id}` (204); `PUT /api/v1/webhooks/{id}/toggle` (flips `active` boolean); `GET /api/v1/webhooks/{id}/deliveries` (paginated `WebhookDeliveryOut`) — AC: POST /webhooks creates a record; DELETE removes it and subsequent GET returns 404; PUT /toggle flips active from true to false; GET /deliveries returns delivery history after a dispatch
+- [x] Task 19 — `git` — Create and checkout `feature/webhook-dispatcher` from main — AC: `git branch --show-current` prints `feature/webhook-dispatcher`
+- [x] Task 20 — `app/services/webhook_dispatcher.py` — `_build_payload(alert)` serializing alert to JSON dict; `_sign_payload(secret, body)` generating `sha256=<hmac>` header; `dispatch_alert(db, alert)` querying active `WebhookConfig` rows, filtering by severity and alert_type, POSTing signed payload via `httpx.AsyncClient`, persisting `WebhookDelivery` row with status/status_code/response_body for each attempt — AC: Dispatching to `https://httpbin.org/post` returns a `WebhookDelivery` with `status=SUCCESS` and `status_code=200`; dispatching to an unreachable URL creates a `WebhookDelivery` with `status=FAILED` and a non-null `error_message`; a webhook with `min_severity=CRITICAL` is skipped for a MEDIUM alert
+- [x] Task 21 — `app/routers/webhooks.py` — `POST /api/v1/webhooks` (201 `WebhookOut`); `GET /api/v1/webhooks` (list all); `GET /api/v1/webhooks/{id}` (single or 404); `DELETE /api/v1/webhooks/{id}` (204); `PUT /api/v1/webhooks/{id}/toggle` (flips `active` boolean); `GET /api/v1/webhooks/{id}/deliveries` (paginated `WebhookDeliveryOut`) — AC: POST /webhooks creates a record; DELETE removes it and subsequent GET returns 404; PUT /toggle flips active from true to false; GET /deliveries returns delivery history after a dispatch
 
 ---
 
@@ -121,9 +121,9 @@
 | feature/log-ingestion-api | 4 | 4 | 0 |
 | feature/anomaly-engine | 3 | 3 | 0 |
 | feature/alert-manager | 2 | 2 | 0 |
-| feature/webhook-dispatcher | 3 | 0 | 3 |
+| feature/webhook-dispatcher | 3 | 3 | 0 |
 | feature/watchdog-scheduler | 2 | 0 | 2 |
 | feature/log-simulator | 2 | 0 | 2 |
 | feature/streamlit-dashboard | 4 | 0 | 4 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **18** | **19** |
+| **TOTAL** | **37** | **21** | **16** |
