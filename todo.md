@@ -90,10 +90,10 @@
 > Covers: Streamlit single-process dashboard with 5s auto-refresh  
 > Depends on: Task 13 (FastAPI running), Task 16 (metrics endpoints), Task 18 (alerts endpoint)
 
-- [ ] Task 26 — `git` — Create and checkout `feature/streamlit-dashboard` from main — AC: `git branch --show-current` prints `feature/streamlit-dashboard`
-- [ ] Task 27 — `dashboard/app.py` (Panel 1 — Metric Cards) — `streamlit-autorefresh` at 5000ms; call `GET /api/v1/metrics/summary`; render 4 `st.metric` cards: Health Score (color green ≥ 80 / yellow ≥ 60 / red < 60), Total Logs 24h, Error Rate 24h (inverse delta), Active Alerts (inverse delta) — AC: Cards appear at top of page; values update every 5 seconds; Health Score delta color matches threshold rules
-- [ ] Task 28 — `dashboard/app.py` (Panel 2 + 3 — Service Table + Trend Chart) — Call `GET /api/v1/metrics/snapshots?hours=1`; group by service, show latest snapshot per service with error_rate progress bar in `st.dataframe`; call `GET /api/v1/metrics/timeseries?metric=error_count`; render Plotly dual-axis line chart (error_count left axis, total_logs right axis); sidebar service multiselect filters the chart — AC: Service table lists each active service with its latest error_rate; chart renders with two Y-axes; selecting a service in the sidebar filters the chart data
-- [ ] Task 29 — `dashboard/app.py` (Panel 4 — Alert Feed + Sidebar Actions) — Call `GET /api/v1/alerts?limit=50`; render `st.dataframe` with severity-based row background colors (CRITICAL `#7f1d1d`, HIGH `#7c2d12`, MEDIUM `#713f12`, LOW `#14532d`); sidebar buttons "Seed Normal Traffic", "Inject Error Spike", "Run Watchdog Now" calling respective `/api/v1/simulate/*` endpoints via `requests`; show `st.success/error` feedback toast — AC: Alert feed shows color-coded rows matching severity; clicking "Inject Error Spike" button calls the API and shows success toast; after "Run Watchdog Now" and a refresh, new alerts appear in the feed
+- [x] Task 26 — `git` — Create and checkout `feature/streamlit-dashboard` from main — AC: `git branch --show-current` prints `feature/streamlit-dashboard`
+- [x] Task 27 — `dashboard/app.py` (Panel 1 — Metric Cards) — `streamlit-autorefresh` at 5000ms; call `GET /api/v1/metrics/summary`; render 4 `st.metric` cards: Health Score (color green ≥ 80 / yellow ≥ 60 / red < 60), Total Logs 24h, Error Rate 24h (inverse delta), Active Alerts (inverse delta) — AC: Cards appear at top of page; values update every 5 seconds; Health Score delta color matches threshold rules
+- [x] Task 28 — `dashboard/app.py` (Panel 2 + 3 — Service Table + Trend Chart) — Call `GET /api/v1/metrics/snapshots?hours=1`; group by service, show latest snapshot per service with error_rate progress bar in `st.dataframe`; call `GET /api/v1/metrics/timeseries?metric=error_count`; render Plotly dual-axis line chart (error_count left axis, total_logs right axis); sidebar service multiselect filters the chart — AC: Service table lists each active service with its latest error_rate; chart renders with two Y-axes; selecting a service in the sidebar filters the chart data
+- [x] Task 29 — `dashboard/app.py` (Panel 4 — Alert Feed + Sidebar Actions) — Call `GET /api/v1/alerts?limit=50`; render `st.dataframe` with severity-based row background colors (CRITICAL `#7f1d1d`, HIGH `#7c2d12`, MEDIUM `#713f12`, LOW `#14532d`); sidebar buttons "Seed Normal Traffic", "Inject Error Spike", "Run Watchdog Now" calling respective `/api/v1/simulate/*` endpoints via `requests`; show `st.success/error` feedback toast — AC: Alert feed shows color-coded rows matching severity; clicking "Inject Error Spike" button calls the API and shows success toast; after "Run Watchdog Now" and a refresh, new alerts appear in the feed
 
 ---
 
@@ -124,6 +124,6 @@
 | feature/webhook-dispatcher | 3 | 3 | 0 |
 | feature/watchdog-scheduler | 2 | 2 | 0 |
 | feature/log-simulator | 2 | 2 | 0 |
-| feature/streamlit-dashboard | 4 | 0 | 4 |
+| feature/streamlit-dashboard | 4 | 4 | 0 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **25** | **12** |
+| **TOTAL** | **37** | **29** | **8** |
