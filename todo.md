@@ -43,9 +43,9 @@
 > Covers: three-tier anomaly detector service, metrics read router  
 > Depends on: Task 09 (models), Task 11 (schemas), Task 13 (main.py for router mount)
 
-- [ ] Task 14 — `git` — Create and checkout `feature/anomaly-engine` from main — AC: `git branch --show-current` prints `feature/anomaly-engine`
-- [ ] Task 15 — `app/services/anomaly_detector.py` — `_zscore(value, baseline)` helper; `get_baseline(db, service, field, lookback)` DB query; `AnomalyResult` dataclass; Tier 1 hard threshold checks (error_count ≥ 10, error_rate ≥ 0.25, latency ≥ 2000ms, dual-breach → CRITICAL); Tier 2 Z-score detection on error_count/total_logs/avg_latency_ms with `|z| ≥ 2.5` trigger and severity mapping (≥5→CRITICAL, ≥4→HIGH, ≥3→MEDIUM); Tier 3 IsolationForest on feature vector `[error_count, total_logs, avg_latency_ms or 0.0]` with `contamination=0.05`, fires only when ≥ 20 baseline windows exist; `detect_anomalies(db, snapshot)` orchestrator returning list of `AnomalyResult`; `create_alert_from_result(db, result, snapshot)` persisting `Alert` row — AC: Calling `detect_anomalies` on a snapshot with `error_count=15` returns at least one `AnomalyResult` with `alert_type=ERROR_RATE_SPIKE`; `_zscore(10, [2,2,2,2,2])` returns a float > 2.5; IsolationForest does not fire with fewer than 20 baseline rows
-- [ ] Task 16 — `app/routers/metrics.py` — `GET /api/v1/metrics/summary` querying last 24h for total_logs, error_count, active_alerts, services_monitored, avg_latency, health_score using formula `max(0, min(100, 100 - error_rate*50 - active_alerts*5))`; `GET /api/v1/metrics/timeseries` returning `TimeSeriesResponse` for any of 4 metrics over 1–168h with optional service filter; `GET /api/v1/metrics/snapshots` returning paginated `MetricSnapshotOut` — AC: GET /metrics/summary returns all 8 fields; `health_score` is always 0–100; GET /metrics/timeseries?metric=error_count returns `{"metric":"error_count","points":[...]}`
+- [x] Task 14 — `git` — Create and checkout `feature/anomaly-engine` from main — AC: `git branch --show-current` prints `feature/anomaly-engine`
+- [x] Task 15 — `app/services/anomaly_detector.py` — `_zscore(value, baseline)` helper; `get_baseline(db, service, field, lookback)` DB query; `AnomalyResult` dataclass; Tier 1 hard threshold checks (error_count ≥ 10, error_rate ≥ 0.25, latency ≥ 2000ms, dual-breach → CRITICAL); Tier 2 Z-score detection on error_count/total_logs/avg_latency_ms with `|z| ≥ 2.5` trigger and severity mapping (≥5→CRITICAL, ≥4→HIGH, ≥3→MEDIUM); Tier 3 IsolationForest on feature vector `[error_count, total_logs, avg_latency_ms or 0.0]` with `contamination=0.05`, fires only when ≥ 20 baseline windows exist; `detect_anomalies(db, snapshot)` orchestrator returning list of `AnomalyResult`; `create_alert_from_result(db, result, snapshot)` persisting `Alert` row — AC: Calling `detect_anomalies` on a snapshot with `error_count=15` returns at least one `AnomalyResult` with `alert_type=ERROR_RATE_SPIKE`; `_zscore(10, [2,2,2,2,2])` returns a float > 2.5; IsolationForest does not fire with fewer than 20 baseline rows
+- [x] Task 16 — `app/routers/metrics.py` — `GET /api/v1/metrics/summary` querying last 24h for total_logs, error_count, active_alerts, services_monitored, avg_latency, health_score using formula `max(0, min(100, 100 - error_rate*50 - active_alerts*5))`; `GET /api/v1/metrics/timeseries` returning `TimeSeriesResponse` for any of 4 metrics over 1–168h with optional service filter; `GET /api/v1/metrics/snapshots` returning paginated `MetricSnapshotOut` — AC: GET /metrics/summary returns all 8 fields; `health_score` is always 0–100; GET /metrics/timeseries?metric=error_count returns `{"metric":"error_count","points":[...]}`
 
 ---
 
@@ -119,11 +119,11 @@
 | feature/project-scaffolding | 5 | 5 | 0 |
 | feature/database-models | 4 | 4 | 0 |
 | feature/log-ingestion-api | 4 | 4 | 0 |
-| feature/anomaly-engine | 3 | 0 | 3 |
+| feature/anomaly-engine | 3 | 3 | 0 |
 | feature/alert-manager | 2 | 0 | 2 |
 | feature/webhook-dispatcher | 3 | 0 | 3 |
 | feature/watchdog-scheduler | 2 | 0 | 2 |
 | feature/log-simulator | 2 | 0 | 2 |
 | feature/streamlit-dashboard | 4 | 0 | 4 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **13** | **24** |
+| **TOTAL** | **37** | **16** | **21** |
