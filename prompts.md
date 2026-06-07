@@ -213,6 +213,35 @@
 
 ---
 
+## Turn 12 — Tasks 14–16: feature/anomaly-engine
+
+**Prompt used:**
+
+> great! The PR was merged. Procced with the next task 14
+
+**Actions taken:**
+- Checked out main, pulled merged PR #3, created `feature/anomaly-engine` branch (Task 14)
+- Task 15: wrote `app/services/anomaly_detector.py`:
+  - `AnomalyResult` dataclass (alert_type, severity, service, title, description, metric_value, threshold_value, zscore)
+  - `_zscore(current, baseline)` — returns None if <5 samples or flat baseline (std<1e-9)
+  - `_severity_from_zscore(z)` — maps |z| to LOW/MEDIUM/HIGH/CRITICAL per spec
+  - `_severity_from_if_score(score)` — maps IF decision score to severity
+  - `_get_baseline(db, service, snapshot_id)` — queries up to BASELINE_LOOKBACK_WINDOWS prior snapshots, excludes current
+  - `_tier1(snapshot)` — hard threshold checks; dual error_count+error_rate breach → upgrades both to CRITICAL
+  - `_tier2(snapshot, baseline)` — Z-score on error_count (ZSCORE_THRESHOLD), total_logs (VOLUME_ZSCORE_THRESHOLD), avg_latency_ms (ZSCORE_THRESHOLD); requires ≥5 samples each
+  - `_tier3(snapshot, baseline)` — IsolationForest(contamination=0.05, random_state=42) on [error_count, total_logs, avg_latency_ms or 0.0]; requires ≥ISOLATION_FOREST_MIN_SAMPLES; fires when decision_function<-0.1 AND predict==-1
+  - `detect_anomalies(db, snapshot)` — orchestrates all tiers, returns combined list
+  - `create_alert_from_result(db, result, snapshot)` — adds Alert to session (caller commits)
+- Task 16: wrote `app/routers/metrics.py`:
+  - `GET /api/v1/metrics/summary` — 24h aggregates from MetricSnapshot + active alert count; health_score = max(0, min(100, 100 - error_rate*50 - active_alerts*5))
+  - `GET /api/v1/metrics/timeseries` — MetricField enum (error_count|total_logs|avg_latency_ms|error_rate), optional service filter, 1–168h window
+  - `GET /api/v1/metrics/snapshots` — paginated MetricSnapshot history
+- Updated `app/main.py`: added `metrics.router` to include_router calls
+- Verified: all routes registered at `/api/v1/metrics/*`; Z-score unit assertions pass; severity mapping correct
+- Updated todo.md (Tasks 14–16 done, 16/37 total), prompts.md (this entry)
+
+---
+
 ## Turn 11 — Task 10–13: feature/log-ingestion-api
 
 **Prompt used:**
