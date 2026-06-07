@@ -213,6 +213,29 @@
 
 ---
 
+## Turn 15 — Tasks 24–25: feature/log-simulator
+
+**Prompt used:**
+
+> merged. We can proceed with the next task 24
+
+**Actions taken:**
+- Pulled merged PR #7 to main, created `feature/log-simulator` branch (Task 24)
+- Task 25: wrote `app/routers/simulate.py`:
+  - `_BUILT_IN_SERVICES` — 5 service names (auth-service, api-gateway, payment-service, user-service, notification-service)
+  - `_MESSAGES` dict — realistic log messages per LogLevel
+  - `_pick_level(error_rate)` — proportional level selector: 80% of error budget → ERROR, 20% → CRITICAL, rest split 60/25/15 INFO/DEBUG/WARNING
+  - `_make_entry(service, level, ts)` — builds LogEntry with Faker uuid4 trace_id, realistic latency bands per level, random host from pod-1..5
+  - POST /simulate/normal-traffic — generates count entries at error_rate, bulk inserts
+  - POST /simulate/error-spike — injects error_count ERROR/CRITICAL entries linearly spread over spike_duration_minutes
+  - POST /simulate/run-watchdog — fires run_watchdog_cycle via BackgroundTasks (returns 200 immediately)
+  - POST /simulate/seed-all-services — 100 entries × 5 services at 5% error rate
+- Updated `app/main.py`: mounted simulate router at /api/v1
+- Verified: all 19 API routes registered; _pick_level(0.10) produces 10% error fraction; ruff clean
+- Updated todo.md (Tasks 24–25 done, 25/37 total), prompts.md (this entry)
+
+---
+
 ## Turn 14 — Tasks 22–23: feature/watchdog-scheduler
 
 **Prompt used:**
