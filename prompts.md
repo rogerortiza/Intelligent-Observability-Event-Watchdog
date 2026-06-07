@@ -107,17 +107,45 @@
 **Prompt used:**
 
 > Add a "Development Standards" section to specifications.md, insert it between the Tech Stack section (Section 2) and the File Structure section (Section 3). Renumber subsequent sections accordingly.
-> [... full Python best practices, design patterns, SOLID principles content as provided ...]
+>
+> ## Development Standards
+>
+> ### Python Best Practices
+> - Type hints on all function signatures and class attributes
+> - Docstrings on all public functions, classes, and modules (Google style)
+> - No magic numbers — use named constants in `config.py`
+> - All exceptions caught explicitly — no bare `except:`
+> - Use `pathlib` over `os.path`
+> - Max line length: 88 characters (Black formatter standard)
+> - Imports ordered: stdlib → third-party → local (isort compatible)
+>
+> ### Design Patterns
+> | Pattern | Where Applied |
+> |---|---|
+> | Repository | All database access — no raw queries inside routers |
+> | Dependency Injection | FastAPI `Depends()` for DB sessions and services |
+> | Factory | Service instantiation in FastAPI lifespan |
+> | Strategy | Anomaly detection tiers — each tier is an interchangeable strategy |
+>
+> ### SOLID Principles
+> | Principle | Application |
+> |---|---|
+> | Single Responsibility | Each file/class has one purpose only |
+> | Open/Closed | New anomaly tiers can be added without modifying existing ones |
+> | Liskov Substitution | All anomaly strategies are interchangeable via a common interface |
+> | Interface Segregation | Schemas are lean — no god-objects |
+> | Dependency Inversion | Routers depend on service abstractions, not concrete implementations |
+>
 > Once updated, confirm the new section numbers and stop.
 
 **Actions taken:**
 - Entered Plan Mode; grepped for section headers and internal cross-references
-- Confirmed no cross-references — renumbering safe
+- Confirmed no cross-references — renumbering safe to do header-only
 - Wrote plan to `/Users/rogerortiza/.claude/plans/add-a-development-standards-cozy-kernighan.md`
-- Inserted new Section 3 (Development Standards) verbatim
+- Inserted new Section 3 (Development Standards) verbatim from user prompt
 - Renumbered nine downstream headers (3→4 through 11→12) via individual Edit calls
 - Verified with `grep "^## "` — headers 1–12 sequential, no gaps
-- Updated prompts.md
+- Updated prompts.md (this entry)
 
 ---
 
@@ -213,83 +241,41 @@
 
 ---
 
-## Turn 16 — Tasks 26–29: feature/streamlit-dashboard
+## Turn 10 — hashFiles CI Condition + Tasks 06–09 (feature/database-models)
 
 **Prompt used:**
 
-> done, proceed with tasks 26-29
+> I've already pushed Tasks 1-5 and merged the PR. We can push the GitHub Actions workflow and PR template changes along with Tasks 6-10 in the feature/database-models branch. Before we proceed, update the CI workflow so the test job only runs if the `tests/` directory exists. Add this condition to the test and smoke-test jobs: `if: hashFiles('tests/**') != ''`. This prevents CI from failing on PRs before the test files are created in Tasks 31-37. Then proceed with Tasks 6-10 on the feature/database-models branch.
 
 **Actions taken:**
-- Pulled merged PR #8 to main, created `feature/streamlit-dashboard` branch (Task 26)
-- Tasks 27–29: wrote `dashboard/app.py` as a single file covering all 4 panels:
-  - `st_autorefresh(interval=5000)` for 5-second refresh
-  - `load_dotenv()` + `os.environ.get("API_BASE_URL")` — no app module dependency, avoids pydantic validation on SUPABASE_DB_URL
-  - `_get/_post` helpers with 5s/10s timeouts and graceful None return on error
-  - **Panel 1** (Metric Cards): `st.metric` for Health Score/Total Logs/Error Rate/Active Alerts; Health Score color badge via inline HTML (green ≥ 80, yellow ≥ 60, red < 60); error_rate + active_alerts use `delta_color="inverse"`
-  - **Panel 2** (Service Table): latest snapshot per service via pandas groupby, error_rate bar via pandas Styler `.bar()`, avg_latency_ms formatted as "NNNms"
-  - **Panel 3** (Trend Chart): Plotly dual-axis (error_count left, total_logs right dotted); sidebar service multiselect fetches per-service timeseries and sums; `make_subplots(secondary_y=True)`
-  - **Panel 4** (Alert Feed): `st.dataframe` with `_alert_row_style` applying `_SEV_STYLE` hex colors per spec; RESOLVED rows get `line-through`; ACKNOWLEDGED rows are muted
-  - **Sidebar**: service multiselect + target service selectbox + 3 simulate buttons (success/error toasts)
-- Verified: syntax OK, ruff passes with no errors
-- Updated todo.md (Tasks 26–29 done, 29/37 total), prompts.md (this entry)
+- Switched to `main`, pulled merged PR #1 (Tasks 01–05)
+- Created and checked out `feature/database-models` branch
+- Popped stash from Turn 9 (restored: ci.yml, PR template, requirements.txt, README.md)
+- Updated `.github/workflows/ci.yml`: added `if: hashFiles('tests/**') != ''` to `test` job; updated `smoke-test` job `if` to combine PR→main check with hashFiles guard
+- Task 06: branch created (done above)
+- Task 07: wrote `app/config.py` — Pydantic `BaseSettings` with 12 named-constant fields, `settings` singleton exported; `model_config` points to `.env`
+- Task 08: wrote `app/database.py` — sync `create_engine` from `settings.supabase_db_url`, `pool_pre_ping=True`, `SessionLocal`, `Base(DeclarativeBase)`, `get_db()` generator, `init_db()` with lazy model import
+- Task 09: wrote `app/models.py` — all 5 enums (`LogLevel`, `AlertType`, `AlertSeverity`, `AlertStatus`, `WebhookStatus`) and 5 ORM models (`LogEntry`, `MetricSnapshot`, `Alert`, `WebhookConfig`, `WebhookDelivery`) with all spec §5 fields, `native_enum=False`, UTC naive defaults via `_utcnow()`, FK relationships with `back_populates` and `cascade="all, delete-orphan"`
+- Verified: `python -c "from app.models import ..."` prints all 5 tables and all enums; engine dialect=postgresql
+- Updated `todo.md`: Tasks 06–09 marked `[x]`, progress tracker updated (9/37 done)
+- Updated `prompts.md` (this entry)
 
 ---
 
-## Turn 15 — Tasks 24–25: feature/log-simulator
+## Turn 11 — Tasks 10–13: feature/log-ingestion-api
 
 **Prompt used:**
 
-> merged. We can proceed with the next task 24
+> done! Proceed with Task 10
 
 **Actions taken:**
-- Pulled merged PR #7 to main, created `feature/log-simulator` branch (Task 24)
-- Task 25: wrote `app/routers/simulate.py`:
-  - `_BUILT_IN_SERVICES` — 5 service names (auth-service, api-gateway, payment-service, user-service, notification-service)
-  - `_MESSAGES` dict — realistic log messages per LogLevel
-  - `_pick_level(error_rate)` — proportional level selector: 80% of error budget → ERROR, 20% → CRITICAL, rest split 60/25/15 INFO/DEBUG/WARNING
-  - `_make_entry(service, level, ts)` — builds LogEntry with Faker uuid4 trace_id, realistic latency bands per level, random host from pod-1..5
-  - POST /simulate/normal-traffic — generates count entries at error_rate, bulk inserts
-  - POST /simulate/error-spike — injects error_count ERROR/CRITICAL entries linearly spread over spike_duration_minutes
-  - POST /simulate/run-watchdog — fires run_watchdog_cycle via BackgroundTasks (returns 200 immediately)
-  - POST /simulate/seed-all-services — 100 entries × 5 services at 5% error rate
-- Updated `app/main.py`: mounted simulate router at /api/v1
-- Verified: all 19 API routes registered; _pick_level(0.10) produces 10% error fraction; ruff clean
-- Updated todo.md (Tasks 24–25 done, 25/37 total), prompts.md (this entry)
-
----
-
-## Turn 14 — Tasks 22–23: feature/watchdog-scheduler
-
-**Prompt used:**
-
-> great. I've already merged the PR. Proceed with the next task 22
-
-**Actions taken:**
-- Pulled merged PRs #5 and #6 to main, created `feature/watchdog-scheduler` branch (Task 22)
-- Task 23: replaced stub `app/services/watchdog.py` with full implementation:
-  - `_aggregate_window(db, service, start, end)` — queries LogEntry rows in [start, end), computes total_logs, error_count, warning_count, error_rate, avg/p95/max latency via numpy, returns MetricSnapshot (not yet persisted)
-  - `run_watchdog_cycle()` — async; creates own SessionLocal; discovers distinct services in current window; skips (service, window_start) pairs with existing snapshots (idempotent); flushes snapshot to get ID; runs detect_anomalies; create_alert_from_result for each result; first commit (snapshots+alerts); dispatch_alert for each new alert; second commit (WebhookDelivery records); exception logs + rollback + continues
-  - `_loop()` — sleeps WATCHDOG_INTERVAL_SECONDS then calls run_watchdog_cycle(), forever
-  - `start_watchdog()` / `stop_watchdog()` — asyncio.Task lifecycle, CancelledError-safe teardown
-  - `is_running()` — checks task state
-- Verified: all functions are the correct coroutine/sync types; `_aggregate_window` on empty window returns zero totals and None latency fields
-- Updated todo.md (Tasks 22–23 done, 23/37 total), prompts.md (this entry)
-
----
-
-## Turn 13 — Tasks 17–21: feature/alert-manager + feature/webhook-dispatcher
-
-**Prompt used:**
-
-> done! The PR was merged, we can proceed with the next tasks
-
-**Actions taken:**
-- Pulled merged PR #4 to main
-- Task 17: created `feature/alert-manager` branch
-- Task 18: wrote `app/routers/alerts.py` — GET /alerts (paginated, 5 query filters), GET /alerts/{id} (404 on miss), PUT /alerts/{id}/acknowledge (400 if non-OPEN), PUT /alerts/{id}/resolve (400 if already RESOLVED); mounted in main.py
-- Task 19: created `feature/webhook-dispatcher` branch (from alert-manager commit so alerts router is included)
-- Task 20: wrote `app/services/webhook_dispatcher.py` — `_build_payload` serializes alert fields to JSON dict; `_sign_payload` computes HMAC-SHA256 as `sha256=<hex>`; `dispatch_alert` queries active WebhookConfig rows, filters by severity order and alert_type list, POSTs with httpx.AsyncClient (10s timeout), persists WebhookDelivery with status/code/body/error; graceful error handling per delivery
-- Task 21: wrote `app/routers/webhooks.py` — POST /webhooks (201), GET /webhooks (list), GET /webhooks/{id} (404), DELETE /webhooks/{id} (204), PUT /webhooks/{id}/toggle (flip active), GET /webhooks/{id}/deliveries (paginated); mounted in main.py
+- Checked out main, pulled merged PR #2, created `feature/log-ingestion-api` branch (Task 10)
+- Task 11: wrote `app/schemas.py` — 17 Pydantic schemas + `BatchIngestResponse`; `PaginatedResponse` is a Generic[T]; all ORM-facing schemas use `ConfigDict(from_attributes=True)`
+- Task 12: wrote `app/routers/logs.py` — POST /ingest (201 LogEntryOut), POST /ingest/batch (201 BatchIngestResponse, 1–1000 entries), GET "" (PaginatedResponse[LogEntryOut] with service/level/start_time/end_time/limit/offset filters, ordered by timestamp DESC)
+- Task 13: wrote `app/main.py` — FastAPI app with asynccontextmanager lifespan (init_db → start_watchdog on startup, stop_watchdog on shutdown), CORSMiddleware allow-all, logs router at /api/v1, GET /api/v1/health returning HealthCheck with dialect + watchdog state + uptime
+- Wrote `app/services/watchdog.py` stub (no-op loop, proper interface) so main.py imports cleanly until Task 23 replaces it
+- Verified: all schemas import, `LogEntryCreate(level="ERROR", ...)` validates, all routes registered at correct paths, Swagger/ReDoc available
+- Updated todo.md (Tasks 10–13 done, 13/37 total), prompts.md (this entry)
 
 ---
 
@@ -322,88 +308,83 @@
 
 ---
 
-## Turn 11 — Task 10–13: feature/log-ingestion-api
+## Turn 13 — Tasks 17–21: feature/alert-manager + feature/webhook-dispatcher
 
 **Prompt used:**
 
-> done! Proceed with Task 10
+> done! The PR was merged, we can proceed with the next tasks
 
 **Actions taken:**
-- Checked out main, pulled merged PR #2, created `feature/log-ingestion-api` branch (Task 10)
-- Task 11: wrote `app/schemas.py` — 17 Pydantic schemas + `BatchIngestResponse`; `PaginatedResponse` is a Generic[T]; all ORM-facing schemas use `ConfigDict(from_attributes=True)`
-- Task 12: wrote `app/routers/logs.py` — POST /ingest (201 LogEntryOut), POST /ingest/batch (201 BatchIngestResponse, 1–1000 entries), GET "" (PaginatedResponse[LogEntryOut] with service/level/start_time/end_time/limit/offset filters, ordered by timestamp DESC)
-- Task 13: wrote `app/main.py` — FastAPI app with asynccontextmanager lifespan (init_db → start_watchdog on startup, stop_watchdog on shutdown), CORSMiddleware allow-all, logs router at /api/v1, GET /api/v1/health returning HealthCheck with dialect + watchdog state + uptime
-- Wrote `app/services/watchdog.py` stub (no-op loop, proper interface) so main.py imports cleanly until Task 23 replaces it
-- Verified: all schemas import, `LogEntryCreate(level="ERROR", ...)` validates, all routes registered at correct paths, Swagger/ReDoc available
-- Updated todo.md (Tasks 10–13 done, 13/37 total), prompts.md (this entry)
+- Pulled merged PR #4 to main
+- Task 17: created `feature/alert-manager` branch
+- Task 18: wrote `app/routers/alerts.py` — GET /alerts (paginated, 5 query filters), GET /alerts/{id} (404 on miss), PUT /alerts/{id}/acknowledge (400 if non-OPEN), PUT /alerts/{id}/resolve (400 if already RESOLVED); mounted in main.py
+- Task 19: created `feature/webhook-dispatcher` branch (from alert-manager commit so alerts router is included)
+- Task 20: wrote `app/services/webhook_dispatcher.py` — `_build_payload` serializes alert fields to JSON dict; `_sign_payload` computes HMAC-SHA256 as `sha256=<hex>`; `dispatch_alert` queries active WebhookConfig rows, filters by severity order and alert_type list, POSTs with httpx.AsyncClient (10s timeout), persists WebhookDelivery with status/code/body/error; graceful error handling per delivery
+- Task 21: wrote `app/routers/webhooks.py` — POST /webhooks (201), GET /webhooks (list), GET /webhooks/{id} (404), DELETE /webhooks/{id} (204), PUT /webhooks/{id}/toggle (flip active), GET /webhooks/{id}/deliveries (paginated); mounted in main.py
 
 ---
 
-## Turn 10 — hashFiles CI Condition + Tasks 06–09 (feature/database-models)
+## Turn 14 — Tasks 22–23: feature/watchdog-scheduler
 
 **Prompt used:**
 
-> I've already pushed Tasks 1-5 and merged the PR. We can push the GitHub Actions workflow and PR template changes along with Tasks 6-10 in the feature/database-models branch. Before we proceed, update the CI workflow so the test job only runs if the `tests/` directory exists. Add this condition to the test and smoke-test jobs: `if: hashFiles('tests/**') != ''`. This prevents CI from failing on PRs before the test files are created in Tasks 31-37. Then proceed with Tasks 6-10 on the feature/database-models branch.
+> great. I've already merged the PR. Proceed with the next task 22
 
 **Actions taken:**
-- Switched to `main`, pulled merged PR #1 (Tasks 01–05)
-- Created and checked out `feature/database-models` branch
-- Popped stash from Turn 9 (restored: ci.yml, PR template, requirements.txt, README.md)
-- Updated `.github/workflows/ci.yml`: added `if: hashFiles('tests/**') != ''` to `test` job; updated `smoke-test` job `if` to combine PR→main check with hashFiles guard
-- Task 06: branch created (done above)
-- Task 07: wrote `app/config.py` — Pydantic `BaseSettings` with 12 named-constant fields, `settings` singleton exported; `model_config` points to `.env`
-- Task 08: wrote `app/database.py` — sync `create_engine` from `settings.supabase_db_url`, `pool_pre_ping=True`, `SessionLocal`, `Base(DeclarativeBase)`, `get_db()` generator, `init_db()` with lazy model import
-- Task 09: wrote `app/models.py` — all 5 enums (`LogLevel`, `AlertType`, `AlertSeverity`, `AlertStatus`, `WebhookStatus`) and 5 ORM models (`LogEntry`, `MetricSnapshot`, `Alert`, `WebhookConfig`, `WebhookDelivery`) with all spec §5 fields, `native_enum=False`, UTC naive defaults via `_utcnow()`, FK relationships with `back_populates` and `cascade="all, delete-orphan"`
-- Verified: `python -c "from app.models import ..."` prints all 5 tables and all enums; engine dialect=postgresql
-- Updated `todo.md`: Tasks 06–09 marked `[x]`, progress tracker updated (9/37 done)
-- Updated `prompts.md` (this entry)
+- Pulled merged PRs #5 and #6 to main, created `feature/watchdog-scheduler` branch (Task 22)
+- Task 23: replaced stub `app/services/watchdog.py` with full implementation:
+  - `_aggregate_window(db, service, start, end)` — queries LogEntry rows in [start, end), computes total_logs, error_count, warning_count, error_rate, avg/p95/max latency via numpy, returns MetricSnapshot (not yet persisted)
+  - `run_watchdog_cycle()` — async; creates own SessionLocal; discovers distinct services in current window; skips (service, window_start) pairs with existing snapshots (idempotent); flushes snapshot to get ID; runs detect_anomalies; create_alert_from_result for each result; first commit (snapshots+alerts); dispatch_alert for each new alert; second commit (WebhookDelivery records); exception logs + rollback + continues
+  - `_loop()` — sleeps WATCHDOG_INTERVAL_SECONDS then calls run_watchdog_cycle(), forever
+  - `start_watchdog()` / `stop_watchdog()` — asyncio.Task lifecycle, CancelledError-safe teardown
+  - `is_running()` — checks task state
+- Verified: all functions are the correct coroutine/sync types; `_aggregate_window` on empty window returns zero totals and None latency fields
+- Updated todo.md (Tasks 22–23 done, 23/37 total), prompts.md (this entry)
 
 ---
 
-## Turn 5 — Add "Development Standards" Section to specifications.md
+## Turn 15 — Tasks 24–25: feature/log-simulator
 
 **Prompt used:**
 
-> Add a "Development Standards" section to specifications.md, insert it between the Tech Stack section (Section 2) and the File Structure section (Section 3). Renumber subsequent sections accordingly.
->
-> ## Development Standards
->
-> ### Python Best Practices
-> - Type hints on all function signatures and class attributes
-> - Docstrings on all public functions, classes, and modules (Google style)
-> - No magic numbers — use named constants in `config.py`
-> - All exceptions caught explicitly — no bare `except:`
-> - Use `pathlib` over `os.path`
-> - Max line length: 88 characters (Black formatter standard)
-> - Imports ordered: stdlib → third-party → local (isort compatible)
->
-> ### Design Patterns
-> | Pattern | Where Applied |
-> |---|---|
-> | Repository | All database access — no raw queries inside routers |
-> | Dependency Injection | FastAPI `Depends()` for DB sessions and services |
-> | Factory | Service instantiation in FastAPI lifespan |
-> | Strategy | Anomaly detection tiers — each tier is an interchangeable strategy |
->
-> ### SOLID Principles
-> | Principle | Application |
-> |---|---|
-> | Single Responsibility | Each file/class has one purpose only |
-> | Open/Closed | New anomaly tiers can be added without modifying existing ones |
-> | Liskov Substitution | All anomaly strategies are interchangeable via a common interface |
-> | Interface Segregation | Schemas are lean — no god-objects |
-> | Dependency Inversion | Routers depend on service abstractions, not concrete implementations |
->
-> Once updated, confirm the new section numbers and stop.
+> merged. We can proceed with the next task 24
 
 **Actions taken:**
-- Entered Plan Mode; grepped for section headers and internal cross-references
-- Confirmed no cross-references — renumbering safe to do header-only
-- Wrote plan to `/Users/rogerortiza/.claude/plans/add-a-development-standards-cozy-kernighan.md`
-- Inserted new Section 3 (Development Standards) verbatim from user prompt
-- Renumbered nine downstream headers (3→4 through 11→12) via individual Edit calls
-- Verified with `grep "^## "` — headers 1–12 sequential, no gaps
-- Updated prompts.md (this entry)
+- Pulled merged PR #7 to main, created `feature/log-simulator` branch (Task 24)
+- Task 25: wrote `app/routers/simulate.py`:
+  - `_BUILT_IN_SERVICES` — 5 service names (auth-service, api-gateway, payment-service, user-service, notification-service)
+  - `_MESSAGES` dict — realistic log messages per LogLevel
+  - `_pick_level(error_rate)` — proportional level selector: 80% of error budget → ERROR, 20% → CRITICAL, rest split 60/25/15 INFO/DEBUG/WARNING
+  - `_make_entry(service, level, ts)` — builds LogEntry with Faker uuid4 trace_id, realistic latency bands per level, random host from pod-1..5
+  - POST /simulate/normal-traffic — generates count entries at error_rate, bulk inserts
+  - POST /simulate/error-spike — injects error_count ERROR/CRITICAL entries linearly spread over spike_duration_minutes
+  - POST /simulate/run-watchdog — fires run_watchdog_cycle via BackgroundTasks (returns 200 immediately)
+  - POST /simulate/seed-all-services — 100 entries × 5 services at 5% error rate
+- Updated `app/main.py`: mounted simulate router at /api/v1
+- Verified: all 19 API routes registered; _pick_level(0.10) produces 10% error fraction; ruff clean
+- Updated todo.md (Tasks 24–25 done, 25/37 total), prompts.md (this entry)
+
+---
+
+## Turn 16 — Tasks 26–29: feature/streamlit-dashboard
+
+**Prompt used:**
+
+> done, proceed with tasks 26-29
+
+**Actions taken:**
+- Pulled merged PR #8 to main, created `feature/streamlit-dashboard` branch (Task 26)
+- Tasks 27–29: wrote `dashboard/app.py` as a single file covering all 4 panels:
+  - `st_autorefresh(interval=5000)` for 5-second refresh
+  - `load_dotenv()` + `os.environ.get("API_BASE_URL")` — no app module dependency, avoids pydantic validation on SUPABASE_DB_URL
+  - `_get/_post` helpers with 5s/10s timeouts and graceful None return on error
+  - **Panel 1** (Metric Cards): `st.metric` for Health Score/Total Logs/Error Rate/Active Alerts; Health Score color badge via inline HTML (green ≥ 80, yellow ≥ 60, red < 60); error_rate + active_alerts use `delta_color="inverse"`
+  - **Panel 2** (Service Table): latest snapshot per service via pandas groupby, error_rate bar via pandas Styler `.bar()`, avg_latency_ms formatted as "NNNms"
+  - **Panel 3** (Trend Chart): Plotly dual-axis (error_count left, total_logs right dotted); sidebar service multiselect fetches per-service timeseries and sums; `make_subplots(secondary_y=True)`
+  - **Panel 4** (Alert Feed): `st.dataframe` with `_alert_row_style` applying `_SEV_STYLE` hex colors per spec; RESOLVED rows get `line-through`; ACKNOWLEDGED rows are muted
+  - **Sidebar**: service multiselect + target service selectbox + 3 simulate buttons (success/error toasts)
+- Verified: syntax OK, ruff passes with no errors
+- Updated todo.md (Tasks 26–29 done, 29/37 total), prompts.md (this entry)
 
 ---
 
@@ -442,3 +423,44 @@
 - Ran `pytest tests/integration/ -v` → 18/18 passed
 - Ran `ruff check tests/` → all clean
 - Updated `todo.md` (Tasks 30–37 marked `[x]`, progress 37/37) and `prompts.md` (this entry)
+
+---
+
+## Turn 19 — CI Smoke-Test Fix + Presentation Deck
+
+**Prompt used (Part A — CI fix):**
+
+> there is an issue in CI / Smoke Test (pull_request) Failing after 39s … SUPABASE_DB_URL: (empty) … exit code 7
+
+**Actions taken (Part A):**
+- Root cause 1: `SUPABASE_DB_URL` secret not set → GitHub Actions evaluates `${{ secrets.SUPABASE_DB_URL }}` as `""` → SQLAlchemy rejects empty URL → uvicorn crashes → API never starts
+- Root cause 2: Polling loop used `bash -e` (strict mode); when curl returns exit code 7 (connection refused), `STATUS=$(curl ...)` propagates that exit code and the script aborts on the first attempt instead of retrying
+- Fix 1: Added `if: env.SUPABASE_DB_URL == ''` skip notice step + `if: env.SUPABASE_DB_URL != ''` guards on Start / Wait / Run smoke test steps
+- Fix 2: Changed `STATUS=$(curl ...)` → `STATUS=$(curl ... || echo "000")` so the assignment always exits 0 and the loop continues
+- Committed and pushed to `feature/smoke-tests` (PR #10)
+
+**Prompt used (Part B — Presentation):**
+
+> great, the app is looking good now create a presentation deck as docs/presentation.md (Markdown format) that covers the following slides: Project Title, Problem Statement, Solution Overview, Tech Stack, Architecture, Live Demo Results, Vibe Coding Process, Key Learnings, V2 Roadmap. Use professional tone. Each slide should have a title, 3-5 bullet points, and speaker notes. Save to docs/presentation.md and update prompts.md with this prompt
+
+**Actions taken (Part B):**
+- Created `docs/` directory
+- Wrote `docs/presentation.md` — 9 slides + appendix; each slide has title, 3-5 bullets, and a speaker notes block
+- Content sourced from `specifications.md`, live code details (anomaly detection tiers, dashboard panels, CI workflow), and session audit data (19 turns, 10 PRs, 37 tasks, 26/26 tests, < 7h)
+- Updated `prompts.md` (this entry)
+
+---
+
+## Turn 20 — Audit Log Cleanup: deduplicate Turn 5, restore chronological order
+
+**Prompt used:**
+
+> In docs/presentation.md update 18 recorded turns to 19 recorded turns in Slide 7 and the Appendix. Also clean up prompts.md — remove the duplicate Turn 5 entry (keep the one with the most detail in Actions taken), reorder all entries chronologically from Turn 1 to Turn 19, and renumber any turns that shifted due to the deduplication. Add this cleanup as Turn 20.
+
+**Actions taken:**
+- `docs/presentation.md`: updated "18 recorded turns" → "19 recorded turns" in Slide 7 bullet and Appendix table row
+- `prompts.md`: identified two Turn 5 entries — kept the detailed one (full prompt text + "verbatim from user prompt" note), removed the abbreviated one (`[... full Python best practices ...]`)
+- `prompts.md`: reordered all 19 turns chronologically (1→2→3→4→5→6→7→8→9→10→11→12→13→14→15→16→17→18→19); prior file had Turns 16, 15, 14, 13, 12, 11, 10 out of sequence after Turn 9
+- No turn renumbering required — all numbers were already 1–19; only ordering was wrong
+- Rewrote `prompts.md` in full via Write tool to apply all changes atomically
+- Updated `prompts.md` (this entry)
