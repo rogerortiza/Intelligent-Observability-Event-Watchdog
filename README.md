@@ -162,6 +162,30 @@ Use [webhook.site](https://webhook.site) to inspect received payloads in real ti
 
 ---
 
+## CI/CD
+
+The project uses GitHub Actions (`.github/workflows/ci.yml`) with three jobs:
+
+| Job | Trigger | What it does |
+|---|---|---|
+| `lint` | every push | `ruff check .` |
+| `test` | every push (after lint) | pytest unit + integration with coverage; uses local SQLite |
+| `smoke-test` | PR → main only (after test) | starts FastAPI server, polls `/health`, runs `smoke_test.py` |
+
+### Required GitHub Secret
+
+Before CI can run the smoke-test job, add this secret in your repository:
+
+**Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret name | Value |
+|---|---|
+| `SUPABASE_DB_URL` | Your full Supabase PostgreSQL connection string |
+
+The `lint` and `test` jobs do **not** require this secret — they use a local SQLite database via `TEST_DATABASE_URL`.
+
+---
+
 ## Running Tests
 
 ### Unit + Integration tests (against local SQLite — never touches Supabase)

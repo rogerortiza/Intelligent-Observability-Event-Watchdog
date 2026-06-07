@@ -190,6 +190,50 @@
 
 ---
 
+## Turn 9 — GitHub Actions CI Workflow + PR Template
+
+**Prompt used:**
+
+> OK. Before continue with Task 06 please Create a GitHub Actions CI workflow file at `.github/workflows/ci.yml`.
+> The workflow must trigger on push to any branch and PR to main, run on ubuntu-latest / Python 3.11.
+> Jobs: (1) lint — ruff check; (2) test — pytest unit + integration with coverage, SQLite override;
+> (3) smoke-test — PR to main only, starts FastAPI, waits for /health 200, runs smoke_test.py.
+> Also add ruff==0.6.9 to requirements.txt under # [dev].
+> Also create .github/pull_request_template.md with: what was built, how to test, AC verification, elapsed time.
+> Document SUPABASE_DB_URL secret in README. Add both files, then stop and wait.
+
+**Actions taken:**
+- Created `.github/workflows/ci.yml` with 3 jobs (lint → test → smoke-test)
+  - lint: pip install ruff==0.6.9 + ruff check .
+  - test: needs lint; TEST_DATABASE_URL=sqlite for SQLite override; SUPABASE_DB_URL fallback for import-time validation; pytest unit + integration with --cov + XML upload artifact
+  - smoke-test: needs test; if PR→main only; uvicorn in background; 30×2s health poll; python smoke_test.py
+- Created `.github/pull_request_template.md` with 4 sections: what was built, how to test, AC verification table, elapsed time
+- Updated `requirements.txt`: added pytest-cov==5.0.0 under # [test] (required for --cov flag), ruff==0.6.9 under # [dev]
+- Updated `README.md`: added CI/CD section with job table + Required GitHub Secret instructions (SUPABASE_DB_URL)
+
+---
+
+## Turn 10 — hashFiles CI Condition + Tasks 06–09 (feature/database-models)
+
+**Prompt used:**
+
+> I've already pushed Tasks 1-5 and merged the PR. We can push the GitHub Actions workflow and PR template changes along with Tasks 6-10 in the feature/database-models branch. Before we proceed, update the CI workflow so the test job only runs if the `tests/` directory exists. Add this condition to the test and smoke-test jobs: `if: hashFiles('tests/**') != ''`. This prevents CI from failing on PRs before the test files are created in Tasks 31-37. Then proceed with Tasks 6-10 on the feature/database-models branch.
+
+**Actions taken:**
+- Switched to `main`, pulled merged PR #1 (Tasks 01–05)
+- Created and checked out `feature/database-models` branch
+- Popped stash from Turn 9 (restored: ci.yml, PR template, requirements.txt, README.md)
+- Updated `.github/workflows/ci.yml`: added `if: hashFiles('tests/**') != ''` to `test` job; updated `smoke-test` job `if` to combine PR→main check with hashFiles guard
+- Task 06: branch created (done above)
+- Task 07: wrote `app/config.py` — Pydantic `BaseSettings` with 12 named-constant fields, `settings` singleton exported; `model_config` points to `.env`
+- Task 08: wrote `app/database.py` — sync `create_engine` from `settings.supabase_db_url`, `pool_pre_ping=True`, `SessionLocal`, `Base(DeclarativeBase)`, `get_db()` generator, `init_db()` with lazy model import
+- Task 09: wrote `app/models.py` — all 5 enums (`LogLevel`, `AlertType`, `AlertSeverity`, `AlertStatus`, `WebhookStatus`) and 5 ORM models (`LogEntry`, `MetricSnapshot`, `Alert`, `WebhookConfig`, `WebhookDelivery`) with all spec §5 fields, `native_enum=False`, UTC naive defaults via `_utcnow()`, FK relationships with `back_populates` and `cascade="all, delete-orphan"`
+- Verified: `python -c "from app.models import ..."` prints all 5 tables and all enums; engine dialect=postgresql
+- Updated `todo.md`: Tasks 06–09 marked `[x]`, progress tracker updated (9/37 done)
+- Updated `prompts.md` (this entry)
+
+---
+
 ## Turn 5 — Add "Development Standards" Section to specifications.md
 
 **Prompt used:**
