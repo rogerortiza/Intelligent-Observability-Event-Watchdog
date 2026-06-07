@@ -442,3 +442,28 @@
 - Ran `pytest tests/integration/ -v` → 18/18 passed
 - Ran `ruff check tests/` → all clean
 - Updated `todo.md` (Tasks 30–37 marked `[x]`, progress 37/37) and `prompts.md` (this entry)
+
+---
+
+## Turn 19 — CI Smoke-Test Fix + Presentation Deck
+
+**Prompt used (Part A — CI fix):**
+
+> there is an issue in CI / Smoke Test (pull_request) Failing after 39s … SUPABASE_DB_URL: (empty) … exit code 7
+
+**Actions taken (Part A):**
+- Root cause 1: `SUPABASE_DB_URL` secret not set → GitHub Actions evaluates `${{ secrets.SUPABASE_DB_URL }}` as `""` → SQLAlchemy rejects empty URL → uvicorn crashes → API never starts
+- Root cause 2: Polling loop used `bash -e` (strict mode); when curl returns exit code 7 (connection refused), `STATUS=$(curl ...)` propagates that exit code and the script aborts on the first attempt instead of retrying
+- Fix 1: Added `if: env.SUPABASE_DB_URL == ''` skip notice step + `if: env.SUPABASE_DB_URL != ''` guards on Start / Wait / Run smoke test steps
+- Fix 2: Changed `STATUS=$(curl ...)` → `STATUS=$(curl ... || echo "000")` so the assignment always exits 0 and the loop continues
+- Committed and pushed to `feature/smoke-tests` (PR #10)
+
+**Prompt used (Part B — Presentation):**
+
+> great, the app is looking good now create a presentation deck as docs/presentation.md (Markdown format) that covers the following slides: Project Title, Problem Statement, Solution Overview, Tech Stack, Architecture, Live Demo Results, Vibe Coding Process, Key Learnings, V2 Roadmap. Use professional tone. Each slide should have a title, 3-5 bullet points, and speaker notes.
+
+**Actions taken (Part B):**
+- Created `docs/` directory
+- Wrote `docs/presentation.md` — 9 slides + appendix; each slide has title, 3-5 bullets, and a speaker notes block
+- Content sourced from `specifications.md`, live code details (anomaly detection tiers, dashboard panels, CI workflow), and session audit data (18 turns, 10 PRs, 37 tasks, 26/26 tests, < 7h)
+- Updated `prompts.md` (this entry)
