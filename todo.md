@@ -72,8 +72,8 @@
 > Covers: APScheduler background watchdog loop and cycle logic  
 > Depends on: Task 15 (anomaly_detector), Task 20 (webhook_dispatcher), Task 09 (models)
 
-- [ ] Task 22 — `git` — Create and checkout `feature/watchdog-scheduler` from main — AC: `git branch --show-current` prints `feature/watchdog-scheduler`
-- [ ] Task 23 — `app/services/watchdog.py` — `_aggregate_window(db, service, start, end)` building a `MetricSnapshot` (total_logs, error_count, warning_count, error_rate, avg/p95/max latency using numpy); `run_watchdog_cycle()` discovering active services in the current window, skipping existing snapshots (idempotent), calling `detect_anomalies`, creating `Alert` rows, committing, then dispatching webhooks; `watchdog_loop()` async infinite loop sleeping `WATCHDOG_INTERVAL_SECONDS`; `start_watchdog()` / `stop_watchdog()` managing the asyncio Task; `is_running()` returning bool — AC: After seeding 20 ERROR logs for `auth-service` and calling `run_watchdog_cycle()` directly, a `MetricSnapshot` and at least one `Alert` row appear in the DB; calling `run_watchdog_cycle()` twice for the same window creates only one snapshot (idempotent); `is_running()` returns True after `start_watchdog()`
+- [x] Task 22 — `git` — Create and checkout `feature/watchdog-scheduler` from main — AC: `git branch --show-current` prints `feature/watchdog-scheduler`
+- [x] Task 23 — `app/services/watchdog.py` — `_aggregate_window(db, service, start, end)` building a `MetricSnapshot` (total_logs, error_count, warning_count, error_rate, avg/p95/max latency using numpy); `run_watchdog_cycle()` discovering active services in the current window, skipping existing snapshots (idempotent), calling `detect_anomalies`, creating `Alert` rows, committing, then dispatching webhooks; `watchdog_loop()` async infinite loop sleeping `WATCHDOG_INTERVAL_SECONDS`; `start_watchdog()` / `stop_watchdog()` managing the asyncio Task; `is_running()` returning bool — AC: After seeding 20 ERROR logs for `auth-service` and calling `run_watchdog_cycle()` directly, a `MetricSnapshot` and at least one `Alert` row appear in the DB; calling `run_watchdog_cycle()` twice for the same window creates only one snapshot (idempotent); `is_running()` returns True after `start_watchdog()`
 
 ---
 
@@ -122,8 +122,8 @@
 | feature/anomaly-engine | 3 | 3 | 0 |
 | feature/alert-manager | 2 | 2 | 0 |
 | feature/webhook-dispatcher | 3 | 3 | 0 |
-| feature/watchdog-scheduler | 2 | 0 | 2 |
+| feature/watchdog-scheduler | 2 | 2 | 0 |
 | feature/log-simulator | 2 | 0 | 2 |
 | feature/streamlit-dashboard | 4 | 0 | 4 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **21** | **16** |
+| **TOTAL** | **37** | **23** | **14** |
