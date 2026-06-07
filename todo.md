@@ -81,8 +81,8 @@
 > Covers: Faker-powered simulation endpoints  
 > Depends on: Task 09 (LogEntry model), Task 22/Task 23 (watchdog for manual trigger endpoint)
 
-- [ ] Task 24 — `git` — Create and checkout `feature/log-simulator` from main — AC: `git branch --show-current` prints `feature/log-simulator`
-- [ ] Task 25 — `app/routers/simulate.py` — `POST /api/v1/simulate/normal-traffic` generating `count` logs with `error_rate` fraction using Faker for messages (service names, error messages, latency values); `POST /api/v1/simulate/error-spike` injecting `error_count` ERROR/CRITICAL logs spread over `spike_duration_minutes`; `POST /api/v1/simulate/run-watchdog` triggering `run_watchdog_cycle()` as a background task; `POST /api/v1/simulate/seed-all-services` seeding all 5 built-in services with mixed-level traffic — AC: POST /simulate/normal-traffic with `count=50` inserts 50 `LogEntry` rows; POST /simulate/error-spike with `error_count=30` inserts ≥30 ERROR/CRITICAL rows; POST /simulate/run-watchdog returns immediately with a 200; POST /simulate/seed-all-services returns service list with 5 entries
+- [x] Task 24 — `git` — Create and checkout `feature/log-simulator` from main — AC: `git branch --show-current` prints `feature/log-simulator`
+- [x] Task 25 — `app/routers/simulate.py` — `POST /api/v1/simulate/normal-traffic` generating `count` logs with `error_rate` fraction using Faker for messages (service names, error messages, latency values); `POST /api/v1/simulate/error-spike` injecting `error_count` ERROR/CRITICAL logs spread over `spike_duration_minutes`; `POST /api/v1/simulate/run-watchdog` triggering `run_watchdog_cycle()` as a background task; `POST /api/v1/simulate/seed-all-services` seeding all 5 built-in services with mixed-level traffic — AC: POST /simulate/normal-traffic with `count=50` inserts 50 `LogEntry` rows; POST /simulate/error-spike with `error_count=30` inserts ≥30 ERROR/CRITICAL rows; POST /simulate/run-watchdog returns immediately with a 200; POST /simulate/seed-all-services returns service list with 5 entries
 
 ---
 
@@ -123,7 +123,7 @@
 | feature/alert-manager | 2 | 2 | 0 |
 | feature/webhook-dispatcher | 3 | 3 | 0 |
 | feature/watchdog-scheduler | 2 | 2 | 0 |
-| feature/log-simulator | 2 | 0 | 2 |
+| feature/log-simulator | 2 | 2 | 0 |
 | feature/streamlit-dashboard | 4 | 0 | 4 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **23** | **14** |
+| **TOTAL** | **37** | **25** | **12** |
