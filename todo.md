@@ -21,10 +21,10 @@
 > Covers: config, sync SQLAlchemy engine, all ORM models and enums  
 > Depends on: Task 03 (package markers), Task 04 (requirements installed)
 
-- [ ] Task 06 — `git` — Create and checkout `feature/database-models` from main — AC: `git branch --show-current` prints `feature/database-models`
-- [ ] Task 07 — `app/config.py` — Pydantic `BaseSettings` class loading all 12 env vars from `.env` with typed defaults; exports `settings` singleton; all threshold values defined as named constants (no magic numbers) — AC: `from app.config import settings; assert settings.error_count_threshold == 10` passes without a `.env` file present
-- [ ] Task 08 — `app/database.py` — Sync SQLAlchemy engine using `settings.database_url`, `SessionLocal` factory via `sessionmaker`, `Base` declarative base, `init_db()` that runs `create_all`, `get_db()` context-manager generator for FastAPI `Depends()` — AC: Running `python -c "from app.database import init_db; import asyncio"` imports cleanly; `init_db()` called with a valid SUPABASE_DB_URL creates tables without error
-- [ ] Task 09 — `app/models.py` — All 5 ORM models (LogEntry, MetricSnapshot, Alert, WebhookConfig, WebhookDelivery) and all 5 enum types (LogLevel, AlertType, AlertSeverity, AlertStatus, WebhookStatus) with every field, type, constraint, default, and FK relationship exactly as specified in spec §5 — AC: `init_db()` runs without error; all 5 tables and all enum columns are visible in the Supabase table editor
+- [x] Task 06 — `git` — Create and checkout `feature/database-models` from main — AC: `git branch --show-current` prints `feature/database-models`
+- [x] Task 07 — `app/config.py` — Pydantic `BaseSettings` class loading all 12 env vars from `.env` with typed defaults; exports `settings` singleton; all threshold values defined as named constants (no magic numbers) — AC: `from app.config import settings; assert settings.error_count_threshold == 10` passes without a `.env` file present
+- [x] Task 08 — `app/database.py` — Sync SQLAlchemy engine using `settings.database_url`, `SessionLocal` factory via `sessionmaker`, `Base` declarative base, `init_db()` that runs `create_all`, `get_db()` context-manager generator for FastAPI `Depends()` — AC: Running `python -c "from app.database import init_db; import asyncio"` imports cleanly; `init_db()` called with a valid SUPABASE_DB_URL creates tables without error
+- [x] Task 09 — `app/models.py` — All 5 ORM models (LogEntry, MetricSnapshot, Alert, WebhookConfig, WebhookDelivery) and all 5 enum types (LogLevel, AlertType, AlertSeverity, AlertStatus, WebhookStatus) with every field, type, constraint, default, and FK relationship exactly as specified in spec §5 — AC: `init_db()` runs without error; all 5 tables and all enum columns are visible in the Supabase table editor
 
 ---
 
@@ -117,7 +117,7 @@
 | Branch | Tasks | Done | Remaining |
 |---|---|---|---|
 | feature/project-scaffolding | 5 | 5 | 0 |
-| feature/database-models | 4 | 0 | 4 |
+| feature/database-models | 4 | 4 | 0 |
 | feature/log-ingestion-api | 4 | 0 | 4 |
 | feature/anomaly-engine | 3 | 0 | 3 |
 | feature/alert-manager | 2 | 0 | 2 |
@@ -126,4 +126,4 @@
 | feature/log-simulator | 2 | 0 | 2 |
 | feature/streamlit-dashboard | 4 | 0 | 4 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **0** | **37** |
+| **TOTAL** | **37** | **9** | **28** |
