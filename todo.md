@@ -32,10 +32,10 @@
 > Covers: all Pydantic schemas, logs router, core FastAPI app  
 > Depends on: Task 07 (config), Task 08 (database), Task 09 (models)
 
-- [ ] Task 10 — `git` — Create and checkout `feature/log-ingestion-api` from main — AC: `git branch --show-current` prints `feature/log-ingestion-api`
-- [ ] Task 11 — `app/schemas.py` — All 17 Pydantic schemas: `LogEntryCreate`, `LogEntryOut`, `LogEntryBatch`, `MetricSnapshotOut`, `MetricsSummary`, `TimeSeriesPoint`, `TimeSeriesResponse`, `AlertOut`, `AlertAcknowledge`, `WebhookCreate`, `WebhookOut`, `WebhookDeliveryOut`, `SimulateNormalRequest`, `SimulateSpikeRequest`, `SimulateResponse`, `HealthCheck`, `PaginatedResponse` — AC: `from app.schemas import LogEntryCreate, PaginatedResponse` imports cleanly; `LogEntryCreate(level="ERROR", service="s", message="m")` validates without error
-- [ ] Task 12 — `app/routers/logs.py` — `POST /api/v1/logs/ingest` (201, returns full `LogEntryOut`), `POST /api/v1/logs/ingest/batch` (201, accepts 1–1000 entries), `GET /api/v1/logs` with query filters (service, level, start_time, end_time, limit 1–1000, offset) returning `PaginatedResponse` ordered by `timestamp DESC` — AC: POST /logs/ingest returns 201 with `id` and `ingested_at` fields; GET /logs?level=ERROR returns only ERROR/CRITICAL entries; batch ingest of 100 entries returns `{"count": 100}`
-- [ ] Task 13 — `app/main.py` — FastAPI app factory with `lifespan` context (calls `init_db()`, `start_watchdog()`, `stop_watchdog()`), `CORSMiddleware` allowing all origins, mounts all 5 routers at `/api/v1` prefix (logs, metrics, alerts, webhooks, simulate), `GET /api/v1/health` returning `HealthCheck` schema with uptime — AC: `uvicorn app.main:app --reload` starts without import errors; `GET /api/v1/health` returns `{"status":"ok","watchdog":"running","database":"postgresql"}`; Swagger UI at `/docs` lists all endpoints
+- [x] Task 10 — `git` — Create and checkout `feature/log-ingestion-api` from main — AC: `git branch --show-current` prints `feature/log-ingestion-api`
+- [x] Task 11 — `app/schemas.py` — All 17 Pydantic schemas: `LogEntryCreate`, `LogEntryOut`, `LogEntryBatch`, `MetricSnapshotOut`, `MetricsSummary`, `TimeSeriesPoint`, `TimeSeriesResponse`, `AlertOut`, `AlertAcknowledge`, `WebhookCreate`, `WebhookOut`, `WebhookDeliveryOut`, `SimulateNormalRequest`, `SimulateSpikeRequest`, `SimulateResponse`, `HealthCheck`, `PaginatedResponse` — AC: `from app.schemas import LogEntryCreate, PaginatedResponse` imports cleanly; `LogEntryCreate(level="ERROR", service="s", message="m")` validates without error
+- [x] Task 12 — `app/routers/logs.py` — `POST /api/v1/logs/ingest` (201, returns full `LogEntryOut`), `POST /api/v1/logs/ingest/batch` (201, accepts 1–1000 entries), `GET /api/v1/logs` with query filters (service, level, start_time, end_time, limit 1–1000, offset) returning `PaginatedResponse` ordered by `timestamp DESC` — AC: POST /logs/ingest returns 201 with `id` and `ingested_at` fields; GET /logs?level=ERROR returns only ERROR/CRITICAL entries; batch ingest of 100 entries returns `{"count": 100}`
+- [x] Task 13 — `app/main.py` — FastAPI app factory with `lifespan` context (calls `init_db()`, `start_watchdog()`, `stop_watchdog()`), `CORSMiddleware` allowing all origins, mounts all 5 routers at `/api/v1` prefix (logs, metrics, alerts, webhooks, simulate), `GET /api/v1/health` returning `HealthCheck` schema with uptime — AC: `uvicorn app.main:app --reload` starts without import errors; `GET /api/v1/health` returns `{"status":"ok","watchdog":"running","database":"postgresql"}`; Swagger UI at `/docs` lists all endpoints
 
 ---
 
@@ -118,7 +118,7 @@
 |---|---|---|---|
 | feature/project-scaffolding | 5 | 5 | 0 |
 | feature/database-models | 4 | 4 | 0 |
-| feature/log-ingestion-api | 4 | 0 | 4 |
+| feature/log-ingestion-api | 4 | 4 | 0 |
 | feature/anomaly-engine | 3 | 0 | 3 |
 | feature/alert-manager | 2 | 0 | 2 |
 | feature/webhook-dispatcher | 3 | 0 | 3 |
@@ -126,4 +126,4 @@
 | feature/log-simulator | 2 | 0 | 2 |
 | feature/streamlit-dashboard | 4 | 0 | 4 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **9** | **28** |
+| **TOTAL** | **37** | **13** | **24** |
