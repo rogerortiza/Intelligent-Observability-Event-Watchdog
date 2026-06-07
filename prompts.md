@@ -213,6 +213,28 @@
 
 ---
 
+## Turn 16 — Tasks 26–29: feature/streamlit-dashboard
+
+**Prompt used:**
+
+> done, proceed with tasks 26-29
+
+**Actions taken:**
+- Pulled merged PR #8 to main, created `feature/streamlit-dashboard` branch (Task 26)
+- Tasks 27–29: wrote `dashboard/app.py` as a single file covering all 4 panels:
+  - `st_autorefresh(interval=5000)` for 5-second refresh
+  - `load_dotenv()` + `os.environ.get("API_BASE_URL")` — no app module dependency, avoids pydantic validation on SUPABASE_DB_URL
+  - `_get/_post` helpers with 5s/10s timeouts and graceful None return on error
+  - **Panel 1** (Metric Cards): `st.metric` for Health Score/Total Logs/Error Rate/Active Alerts; Health Score color badge via inline HTML (green ≥ 80, yellow ≥ 60, red < 60); error_rate + active_alerts use `delta_color="inverse"`
+  - **Panel 2** (Service Table): latest snapshot per service via pandas groupby, error_rate bar via pandas Styler `.bar()`, avg_latency_ms formatted as "NNNms"
+  - **Panel 3** (Trend Chart): Plotly dual-axis (error_count left, total_logs right dotted); sidebar service multiselect fetches per-service timeseries and sums; `make_subplots(secondary_y=True)`
+  - **Panel 4** (Alert Feed): `st.dataframe` with `_alert_row_style` applying `_SEV_STYLE` hex colors per spec; RESOLVED rows get `line-through`; ACKNOWLEDGED rows are muted
+  - **Sidebar**: service multiselect + target service selectbox + 3 simulate buttons (success/error toasts)
+- Verified: syntax OK, ruff passes with no errors
+- Updated todo.md (Tasks 26–29 done, 29/37 total), prompts.md (this entry)
+
+---
+
 ## Turn 15 — Tasks 24–25: feature/log-simulator
 
 **Prompt used:**
