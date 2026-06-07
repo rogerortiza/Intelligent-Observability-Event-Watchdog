@@ -127,17 +127,25 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Skip notice (SUPABASE_DB_URL not configured)
+        if: env.SUPABASE_DB_URL == ''
+        run: |
+          echo "::notice::Smoke test skipped — SUPABASE_DB_URL secret is not set."
+          echo "To enable smoke tests: Settings → Secrets and variables → Actions → New repository secret"
+
       - name: Start FastAPI server in background
+        if: env.SUPABASE_DB_URL != ''
         run: |
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           echo "UVICORN_PID=$!" >> "$GITHUB_ENV"
 
       - name: Wait for API to be healthy (max 60s)
+        if: env.SUPABASE_DB_URL != ''
         run: |
           echo "Polling http://localhost:8000/api/v1/health ..."
           STATUS="000"
           for i in $(seq 1 30); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/v1/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/v1/health || echo "000")
             if [ "$STATUS" = "200" ]; then
               echo "API ready after attempt $i"
               break
@@ -151,6 +159,7 @@ jobs:
           fi
 
       - name: Run smoke test
+        if: env.SUPABASE_DB_URL != ''
         run: python tests/smoke_test.py
 
       - name: Stop FastAPI server
