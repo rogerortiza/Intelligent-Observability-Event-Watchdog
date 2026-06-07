@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import engine, init_db
-from app.routers import logs, metrics
+from app.routers import alerts, logs, metrics
 from app.schemas import HealthCheck
 from app.services import watchdog
 
@@ -45,6 +45,7 @@ app.add_middleware(
 
 app.include_router(logs.router, prefix="/api/v1")
 app.include_router(metrics.router, prefix="/api/v1")
+app.include_router(alerts.router, prefix="/api/v1")
 
 
 @app.get("/api/v1/health", response_model=HealthCheck, tags=["health"])

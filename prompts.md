@@ -213,6 +213,22 @@
 
 ---
 
+## Turn 13 — Tasks 17–21: feature/alert-manager + feature/webhook-dispatcher
+
+**Prompt used:**
+
+> done! The PR was merged, we can proceed with the next tasks
+
+**Actions taken:**
+- Pulled merged PR #4 to main
+- Task 17: created `feature/alert-manager` branch
+- Task 18: wrote `app/routers/alerts.py` — GET /alerts (paginated, 5 query filters), GET /alerts/{id} (404 on miss), PUT /alerts/{id}/acknowledge (400 if non-OPEN), PUT /alerts/{id}/resolve (400 if already RESOLVED); mounted in main.py
+- Task 19: created `feature/webhook-dispatcher` branch (from alert-manager commit so alerts router is included)
+- Task 20: wrote `app/services/webhook_dispatcher.py` — `_build_payload` serializes alert fields to JSON dict; `_sign_payload` computes HMAC-SHA256 as `sha256=<hex>`; `dispatch_alert` queries active WebhookConfig rows, filters by severity order and alert_type list, POSTs with httpx.AsyncClient (10s timeout), persists WebhookDelivery with status/code/body/error; graceful error handling per delivery
+- Task 21: wrote `app/routers/webhooks.py` — POST /webhooks (201), GET /webhooks (list), GET /webhooks/{id} (404), DELETE /webhooks/{id} (204), PUT /webhooks/{id}/toggle (flip active), GET /webhooks/{id}/deliveries (paginated); mounted in main.py
+
+---
+
 ## Turn 12 — Tasks 14–16: feature/anomaly-engine
 
 **Prompt used:**
