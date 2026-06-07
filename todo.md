@@ -9,11 +9,11 @@
 ## Branch: `feature/project-scaffolding`
 > Covers: repo structure, env template, package markers, README
 
-- [ ] Task 01 — `git` — Create and checkout `feature/project-scaffolding` from main — AC: `git branch --show-current` prints `feature/project-scaffolding`
-- [ ] Task 02 — `.env.example` — Document all 12 env vars (SUPABASE_DB_URL, DEBUG, all thresholds, API_BASE_URL) with types, defaults, and inline comments — AC: File exists at project root; `diff .env.example` against spec §9 shows no missing variables
-- [ ] Task 03 — `app/__init__.py`, `app/routers/__init__.py`, `app/services/__init__.py` — Empty package markers so Python treats all three dirs as importable packages — AC: `python -c "import app; import app.routers; import app.services"` exits 0 with no errors
-- [ ] Task 04 — `requirements.txt` — Confirm all 18 pinned packages match spec §2; run `pip install -r requirements.txt` inside `.venv` — AC: `.venv/bin/pip list --format=freeze` shows every package at the pinned version; no install errors
-- [ ] Task 05 — `README.md` — Step-by-step setup (clone → venv → install → copy .env → configure Supabase URL → run API → run dashboard → run tests) with exact shell commands for each step — AC: A developer following the README from scratch reaches a running FastAPI server and Streamlit dashboard
+- [x] Task 01 — `git` — Create and checkout `feature/project-scaffolding` from main — AC: `git branch --show-current` prints `feature/project-scaffolding`
+- [x] Task 02 — `.env.example` — Document all 12 env vars (SUPABASE_DB_URL, DEBUG, all thresholds, API_BASE_URL) with types, defaults, and inline comments — AC: File exists at project root; `diff .env.example` against spec §9 shows no missing variables
+- [x] Task 03 — `app/__init__.py`, `app/routers/__init__.py`, `app/services/__init__.py` — Empty package markers so Python treats all three dirs as importable packages — AC: `python -c "import app; import app.routers; import app.services"` exits 0 with no errors
+- [x] Task 04 — `requirements.txt` — Confirm all 18 pinned packages match spec §2; run `pip install -r requirements.txt` inside `.venv` — AC: `.venv/bin/pip list --format=freeze` shows every package at the pinned version; no install errors
+- [x] Task 05 — `README.md` — Step-by-step setup (clone → venv → install → copy .env → configure Supabase URL → run API → run dashboard → run tests) with exact shell commands for each step — AC: A developer following the README from scratch reaches a running FastAPI server and Streamlit dashboard
 
 ---
 
@@ -116,7 +116,7 @@
 
 | Branch | Tasks | Done | Remaining |
 |---|---|---|---|
-| feature/project-scaffolding | 5 | 0 | 5 |
+| feature/project-scaffolding | 5 | 5 | 0 |
 | feature/database-models | 4 | 0 | 4 |
 | feature/log-ingestion-api | 4 | 0 | 4 |
 | feature/anomaly-engine | 3 | 0 | 3 |
