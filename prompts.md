@@ -173,6 +173,23 @@
 
 ---
 
+## Turn 8 — Tasks 02–05: feature/project-scaffolding deliverables
+
+**Prompt used:**
+
+> proceed
+
+**Actions taken:**
+- Task 02: Wrote `.env.example` with all 13 env vars (12 from spec §9 + TEST_DATABASE_URL from §10), each with type, default, and inline comment
+- Task 03: Created `app/__init__.py`, `app/routers/__init__.py`, `app/services/__init__.py`, `dashboard/` directory — verified `python -c "import app; import app.routers; import app.services"` exits 0
+- Task 04: Verified `requirements.txt` contains all 18 pinned packages matching spec §2; all confirmed installed in `.venv`
+- Task 05: Wrote `README.md` with full setup guide (clone → venv → install → .env → run API → run dashboard → run tests), webhook registration example, env var reference table, project structure, tech stack
+- Updated `todo.md`: Tasks 02–05 marked `[x]`, progress tracker updated
+- Staged, committed, pushed `feature/project-scaffolding` to origin
+- Opened PR to main via `gh pr create`
+
+---
+
 ## Turn 5 — Add "Development Standards" Section to specifications.md
 
 **Prompt used:**
