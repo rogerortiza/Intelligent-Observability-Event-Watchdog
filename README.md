@@ -35,6 +35,22 @@ Streamlit Dashboard (separate process, auto-refresh 5s)
 
 ---
 
+## Live Demo Evidence
+
+### Streamlit Dashboard — Health Score & Metrics
+![Streamlit Dashboard](docs/screenshots/dashboard.png)
+
+### Alert Feed — Color-coded by Severity
+![Alert Feed](docs/screenshots/alert_feed.png)
+
+### Swagger UI — Interactive API Explorer
+![Swagger UI](docs/screenshots/swagger.png)
+
+### Supabase — Live PostgreSQL Data
+![Supabase](docs/screenshots/supabase.png)
+
+---
+
 ## Prerequisites
 
 | Requirement | Version | Notes |

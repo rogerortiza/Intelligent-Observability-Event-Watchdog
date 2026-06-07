@@ -464,3 +464,19 @@
 - No turn renumbering required — all numbers were already 1–19; only ordering was wrong
 - Rewrote `prompts.md` in full via Write tool to apply all changes atomically
 - Updated `prompts.md` (this entry)
+
+---
+
+## Turn 21 — Live Demo Screenshots + Presentation Turn Count Update
+
+**Prompt used:**
+
+> In @docs/screenshots, find all screenshot files and embed them in README.md under a new section as Live Demo Evidence (after the Architecture Overview section). Use relative paths.
+> In @docs/presentation.md update 19 recorded turns to 21 recorded turns in Slide 7 and the Appendix metrics table.
+> Add this as Turn 21 in prompts.md
+
+**Actions taken:**
+- `README.md`: inserted new "Live Demo Evidence" section immediately after Architecture Overview with four embedded images using relative paths: `docs/screenshots/dashboard.png`, `docs/screenshots/alert_feed.png`, `docs/screenshots/swagger.png`, `docs/screenshots/supabase.png`
+- `docs/presentation.md`: updated "19 recorded turns" → "21 recorded turns" in Slide 7 bullet and Appendix table row (skipped 20 because Turns 20 and 21 were recorded together in this commit)
+- `prompts.md`: appended Turn 21 (this entry)
+- Committed all three files to `main` in a single commit and pushed to origin

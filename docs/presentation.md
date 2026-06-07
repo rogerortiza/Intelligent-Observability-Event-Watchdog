@@ -186,7 +186,7 @@
 **Architectural control + AI autonomy, not a choice between them:**
 
 - **Lead Architect Rules** — The human acted as Product Owner and Architect: defining specs, approving plans, issuing prompts, and merging PRs — but writing zero lines of code; Claude Code handled every implementation detail
-- **prompts.md Audit Log** — Every prompt issued was appended to `prompts.md` in the same commit it produced; the project is fully reproducible — 19 recorded turns, 10 PRs, 37 tasks
+- **prompts.md Audit Log** — Every prompt issued was appended to `prompts.md` in the same commit it produced; the project is fully reproducible — 21 recorded turns, 10 PRs, 37 tasks
 - **Plan Mode** — Architectural decisions (spec design, tech stack pivot, task ordering) were made in Plan Mode before a single file was created; no code was written before the spec was locked
 - **Spec-First Development** — `specifications.md` was written and locked before `requirements.txt` existed; all 37 tasks derived from it; no scope changes after lock
 - **GitHub Flow** — Each task group lived on its own `feature/*` branch; every merge was via a pull request with acceptance criteria; CI ran lint + unit + integration tests on every PR
@@ -265,7 +265,7 @@
 | Total tasks | 37 |
 | Feature branches | 10 |
 | Pull requests | 10 |
-| Recorded prompt turns | 19 |
+| Recorded prompt turns | 21 |
 | Source files written | 22 |
 | Test files | 5 |
 | Tests passing | 26 / 26 |
