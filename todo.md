@@ -53,8 +53,8 @@
 > Covers: alert read/lifecycle router (list, detail, ACK, resolve)  
 > Depends on: Task 09 (Alert model), Task 11 (AlertOut schema)
 
-- [ ] Task 17 — `git` — Create and checkout `feature/alert-manager` from main — AC: `git branch --show-current` prints `feature/alert-manager`
-- [ ] Task 18 — `app/routers/alerts.py` — `GET /api/v1/alerts` with filters (status, severity, alert_type, service, limit, offset) returning `PaginatedResponse` ordered by `triggered_at DESC`; `GET /api/v1/alerts/{id}` returning `AlertOut` or 404; `PUT /api/v1/alerts/{id}/acknowledge` setting `status=ACKNOWLEDGED` and `acknowledged_at=utcnow`, returns 400 if already non-OPEN; `PUT /api/v1/alerts/{id}/resolve` setting `status=RESOLVED` and `resolved_at=utcnow`, returns 400 if already resolved — AC: GET /alerts returns paginated list; PUT /alerts/1/acknowledge on an OPEN alert returns 200 with `status="ACKNOWLEDGED"`; second ACK on same alert returns 400; PUT /alerts/1/resolve sets `resolved_at` timestamp
+- [x] Task 17 — `git` — Create and checkout `feature/alert-manager` from main — AC: `git branch --show-current` prints `feature/alert-manager`
+- [x] Task 18 — `app/routers/alerts.py` — `GET /api/v1/alerts` with filters (status, severity, alert_type, service, limit, offset) returning `PaginatedResponse` ordered by `triggered_at DESC`; `GET /api/v1/alerts/{id}` returning `AlertOut` or 404; `PUT /api/v1/alerts/{id}/acknowledge` setting `status=ACKNOWLEDGED` and `acknowledged_at=utcnow`, returns 400 if already non-OPEN; `PUT /api/v1/alerts/{id}/resolve` setting `status=RESOLVED` and `resolved_at=utcnow`, returns 400 if already resolved — AC: GET /alerts returns paginated list; PUT /alerts/1/acknowledge on an OPEN alert returns 200 with `status="ACKNOWLEDGED"`; second ACK on same alert returns 400; PUT /alerts/1/resolve sets `resolved_at` timestamp
 
 ---
 
@@ -120,10 +120,10 @@
 | feature/database-models | 4 | 4 | 0 |
 | feature/log-ingestion-api | 4 | 4 | 0 |
 | feature/anomaly-engine | 3 | 3 | 0 |
-| feature/alert-manager | 2 | 0 | 2 |
+| feature/alert-manager | 2 | 2 | 0 |
 | feature/webhook-dispatcher | 3 | 0 | 3 |
 | feature/watchdog-scheduler | 2 | 0 | 2 |
 | feature/log-simulator | 2 | 0 | 2 |
 | feature/streamlit-dashboard | 4 | 0 | 4 |
 | feature/smoke-tests | 8 | 0 | 8 |
-| **TOTAL** | **37** | **16** | **21** |
+| **TOTAL** | **37** | **18** | **19** |
